@@ -3,7 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final item;
-  ProductDetailPage({Key? key, this.item}) : super(key: key);
+  final view;
+  ProductDetailPage({Key? key, this.item, this.view}) : super(key: key);
 
   @override
   _ProductDetailPageState createState() => _ProductDetailPageState();
