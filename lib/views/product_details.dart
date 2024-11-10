@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:slimyfaq/bloc/cart.bloc.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final item;
   final view;
-  ProductDetailPage({Key? key, this.item, this.view}) : super(key: key);
+  const ProductDetailPage({super.key, this.item, this.view});
 
   @override
   _ProductDetailPageState createState() => _ProductDetailPageState();
@@ -35,7 +37,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                          color: Colors.black.withOpacity(0.03),
+                          color: Colors.red.withOpacity(0.03),
                           blurRadius: 2,
                           spreadRadius: 5)
                     ]),
@@ -78,7 +80,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ),
             )
           ]),
-          Container(
+          SizedBox(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -254,26 +256,97 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           ),
                         ])),
                 // add to cart button
+                // Padding(
+                //   padding: const EdgeInsets.only(top: 32),
+                //   child: Container(
+                //     height: 60,
+                //     width: MediaQuery.of(context).size.width,
+                //     decoration: BoxDecoration(
+                //       color: Colors.black,
+                //       borderRadius: BorderRadius.circular(10),
+                //     ),
+                //     child: Center(
+                //       child: Text(
+                //         'Add to cart',
+                //         style: GoogleFonts.poppins(
+                //             fontSize: 16,
+                //             fontWeight: FontWeight.w700,
+                //             color: Colors.white),
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 32),
-                  child: Container(
-                    height: 60,
-                    width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Add to cart',
-                        style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ),
+                    padding: const EdgeInsets.only(top: 32),
+                    child: BlocBuilder<CartBloc, CartState>(
+                      builder: (context, cartState) {
+                        final quantity = cartState.items[widget.item] ?? 0;
+
+                        return quantity == 0
+                            ? ElevatedButton(
+                                onPressed: () {
+                                  context
+                                      .read<CartBloc>()
+                                      .add(AddToCartEvent(widget.item));
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.black,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    minimumSize: Size(
+                                        MediaQuery.of(context).size.width, 60)),
+                                child: Text(
+                                  'Add to cart',
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.white),
+                                ),
+                              )
+                            : Container(
+                              height: 60,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: Colors.black),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(Icons.remove),
+                                      onPressed: () {
+                                        context.read<CartBloc>().add(
+                                            RemoveFromCartEvent(widget.item));
+                                      },
+                                      color: Colors.white,
+                                    ),
+                                    SizedBox(
+                                      width: 16,
+                                    ),
+                                    Text(
+                                      '$quantity',
+                                      style: GoogleFonts.poppins(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.white),
+                                    ),
+                                    SizedBox(
+                                      width: 16,
+                                    ),
+                                    IconButton(
+                                      icon: Icon(Icons.add),
+                                      onPressed: () {
+                                        context
+                                            .read<CartBloc>()
+                                            .add(AddToCartEvent(widget.item));
+                                      },
+                                      color: Colors.white,
+                                    ),
+                                  ],
+                                ),
+                              );
+                      },
+                    ))
               ],
             ),
           )
